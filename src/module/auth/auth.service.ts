@@ -1,0 +1,76 @@
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { User } from '@prisma/client';
+import { SigninAuthDto } from './dto/signin-auth.dto';
+import { SignupAuthDto } from './dto/signup-auth.dto';
+import { PrismaService } from 'src/service/database/prisma.service';
+import { encriptPassword, verifyPassword } from 'src/helper/password.helper';
+
+@Injectable()
+export class AuthService {
+  constructor(
+    private readonly db: PrismaService,
+    private readonly jwtService: JwtService,
+  ) {}
+
+  private async validateUserCredentials(
+    email: string,
+    password: string,
+  ): Promise<User | null> {
+    const user = await this.db.user.findFirst({ where: { email } });
+
+    if (!user) {
+      return null;
+    }
+
+    if (!(await verifyPassword(password, user.password))) {
+      return null;
+    }
+
+    return user;
+  }
+
+  async signin(signinAuthDto: SigninAuthDto) {
+    const user = await this.validateUserCredentials(
+      signinAuthDto.email,
+      signinAuthDto.password,
+    );
+
+    if (!user) {
+      throw new UnauthorizedException('email or password is invalid.');
+    }
+
+    return {
+      token: this.jwtService.sign(user),
+    };
+  }
+
+  async signup({
+    name,
+    email,
+    password,
+  }: SignupAuthDto): Promise<{ token: string }> {
+    if (
+      await this.db.user.findUnique({
+        where: { email },
+      })
+    ) {
+      throw new BadRequestException('A user already uses this email');
+    }
+
+    const hashedPassword = await encriptPassword(password);
+    const user = await this.db.user.create({
+      data: {
+        email,
+        name,
+        password: hashedPassword,
+      },
+    });
+
+    return { token: this.jwtService.sign(user) };
+  }
+}
