@@ -14,21 +14,20 @@ export class PasswordService {
     createPasswordDto: CreatePasswordDto,
     signedUserId: string,
   ): Promise<PasswordPersistence> {
-    const { encryptedData: passwordCrypt, hash: passwordHash } = encryptAndHash(
-      createPasswordDto.password,
-      privateKey,
-    );
+    const passwordEncrypted = this.encryptPassoword(createPasswordDto.password);
 
     delete createPasswordDto.password;
 
     const password = await this.db.password.create({
       data: {
         ...createPasswordDto,
-        passwordHash,
-        passwordCrypt,
+        ...passwordEncrypted,
         userId: signedUserId,
       },
     });
+
+    delete password.passwordCrypt;
+    delete password.passwordHash;
 
     return password;
   }
@@ -37,19 +36,20 @@ export class PasswordService {
     passwordId: string,
     updatePasswordDto: UpdatePasswordDto,
   ): Promise<PasswordPersistence> {
-    const { encryptedData: passwordCrypt, hash: passwordHash } = encryptAndHash(
-      updatePasswordDto.password,
-      privateKey,
-    );
+    const passwordEncrypted = this.encryptPassoword(updatePasswordDto.password);
+
+    delete updatePasswordDto.password;
 
     const password = await this.db.password.update({
       data: {
         ...updatePasswordDto,
-        passwordHash,
-        passwordCrypt,
+        ...passwordEncrypted,
       },
       where: { id: passwordId },
     });
+
+    delete password.passwordCrypt;
+    delete password.passwordHash;
 
     return password;
   }
@@ -62,11 +62,8 @@ export class PasswordService {
     if (password.userId !== signedUserId) {
       throw new NotFoundException('Password not found');
     }
-    const passwordDecrypt = decrypt(
-      password.passwordCrypt,
-      privateKey,
-      password.passwordHash,
-    );
+
+    const passwordDecrypt = this.decryptPassoword(password);
 
     delete password.passwordCrypt;
     delete password.passwordHash;
@@ -80,16 +77,28 @@ export class PasswordService {
     });
 
     return passwords.map((password: PasswordPersistence) => {
-      const passwordDecrypt = decrypt(
-        password.passwordCrypt,
-        privateKey,
-        password.passwordHash,
-      );
+      const passwordDecrypt = this.decryptPassoword(password);
 
       delete password.passwordCrypt;
       delete password.passwordHash;
 
       return { ...password, password: passwordDecrypt };
     });
+  }
+
+  private decryptPassoword(password: PasswordPersistence) {
+    return decrypt(password.passwordCrypt, privateKey, password.passwordHash);
+  }
+
+  private encryptPassoword(password: string) {
+    const { encryptedData: passwordCrypt, hash: passwordHash } = encryptAndHash(
+      password,
+      privateKey,
+    );
+
+    return {
+      passwordCrypt,
+      passwordHash,
+    };
   }
 }

@@ -11,7 +11,7 @@ const UpdatePasswordSchema = z.object({
 export class UpdatePasswordDto extends createZodDto(UpdatePasswordSchema) {
   readonly title: string;
   readonly username: string;
-  readonly password: string;
+  password: string;
   readonly url: string;
   readonly notes: string;
 }
