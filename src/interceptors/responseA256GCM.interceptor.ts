@@ -1,0 +1,23 @@
+import {
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  CallHandler,
+} from '@nestjs/common';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { privateKey } from 'src/config/private-key.config';
+import { encryptAES } from 'src/helper/encrypt-decrypt-aes.helper';
+
+@Injectable()
+export class ResponseA256GCMInterceptor implements NestInterceptor {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+    return next.handle().pipe(
+      map((data) => {
+        return {
+          data: encryptAES(JSON.stringify(data), privateKey()),
+        };
+      }),
+    );
+  }
+}
