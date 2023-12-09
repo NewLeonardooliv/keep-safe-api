@@ -29,7 +29,6 @@ model Password {
   title             String
   username          String
   passwordHash      String              @map("password_hash")
-  passwordCrypt     String              @map("password_crypt")
   url               String
   notes             String?
   createdAt         DateTime            @default(now()) @map("created_at")

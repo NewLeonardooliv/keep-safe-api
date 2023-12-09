@@ -4,7 +4,10 @@ import { UpdatePasswordDto } from './dto/update-password.dto';
 import { Password as PasswordPersistence } from '@prisma/client';
 import { CreatePasswordDto } from './dto/create-password.dto';
 import { privateKey } from 'src/config/private-key.config';
-import { decrypt, encryptAndHash } from 'src/helper/encrypt-decrypt.helper';
+import {
+  decryptAES,
+  encryptAES,
+} from 'src/helper/encrypt-decrypt-aes.helper copy';
 
 @Injectable()
 export class PasswordService {
@@ -24,7 +27,6 @@ export class PasswordService {
       },
     });
 
-    delete password.passwordCrypt;
     delete password.passwordHash;
 
     return password;
@@ -46,7 +48,6 @@ export class PasswordService {
       where: { id: passwordId },
     });
 
-    delete password.passwordCrypt;
     delete password.passwordHash;
 
     return password;
@@ -59,7 +60,6 @@ export class PasswordService {
 
     const passwordDecrypt = this.decryptPassoword(password);
 
-    delete password.passwordCrypt;
     delete password.passwordHash;
 
     return { ...password, password: passwordDecrypt };
@@ -77,7 +77,6 @@ export class PasswordService {
     return passwords.map((password: PasswordPersistence) => {
       const passwordDecrypt = this.decryptPassoword(password);
 
-      delete password.passwordCrypt;
       delete password.passwordHash;
 
       return { ...password, password: passwordDecrypt };
@@ -85,17 +84,13 @@ export class PasswordService {
   }
 
   private decryptPassoword(password: PasswordPersistence) {
-    return decrypt(password.passwordCrypt, privateKey, password.passwordHash);
+    return decryptAES(password.passwordHash, privateKey);
   }
 
   private encryptPassoword(password: string) {
-    const { encryptedData: passwordCrypt, hash: passwordHash } = encryptAndHash(
-      password,
-      privateKey,
-    );
+    const passwordHash = encryptAES(password, privateKey);
 
     return {
-      passwordCrypt,
       passwordHash,
     };
   }
