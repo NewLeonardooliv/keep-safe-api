@@ -84,11 +84,11 @@ export class PasswordService {
   }
 
   private decryptPassoword(password: PasswordPersistence) {
-    return decryptAES(password.passwordHash, privateKey);
+    return decryptAES(password.passwordHash, privateKey());
   }
 
   private encryptPassoword(password: string) {
-    const passwordHash = encryptAES(password, privateKey);
+    const passwordHash = encryptAES(password, privateKey());
 
     return {
       passwordHash,
