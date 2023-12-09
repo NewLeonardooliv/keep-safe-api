@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/service/database/prisma.service';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { Password as PasswordPersistence } from '@prisma/client';
@@ -54,6 +54,10 @@ export class PasswordService {
     const password = await this.db.password.findUnique({
       where: { id },
     });
+
+    if (!password) {
+      throw new NotFoundException('Password not found');
+    }
 
     const passwordDecrypt = this.decryptPassoword(password);
 
