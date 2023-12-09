@@ -4,10 +4,7 @@ import { UpdatePasswordDto } from './dto/update-password.dto';
 import { Password as PasswordPersistence } from '@prisma/client';
 import { CreatePasswordDto } from './dto/create-password.dto';
 import { privateKey } from 'src/config/private-key.config';
-import {
-  decryptAES,
-  encryptAES,
-} from 'src/helper/encrypt-decrypt-aes.helper copy';
+import { decryptAES, encryptAES } from 'src/helper/encrypt-decrypt-aes.helper';
 
 @Injectable()
 export class PasswordService {
