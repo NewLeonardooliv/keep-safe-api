@@ -44,16 +44,17 @@ model VaultUser {
   vaultId String @map("vault_id")
   userId  String @map("user_id")
 
-  user      User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   vault Vault @relation(fields: [vaultId], references: [id], onDelete: Cascade)
 
   @@map("vault_users")
 }
 
 model Vault {
-  id      String @id @default(uuid())
-  name    String
-  ownerId String @map("owner_id")
+  id          String @id @default(uuid())
+  name        String
+  description String?
+  ownerId     String @map("owner_id")
 
   user User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 

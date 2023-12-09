@@ -160,14 +160,14 @@ export class VaultService {
       throw new BadRequestException('Only owners can update this vault.');
     }
 
-    await this.db.vault.update({
+    const vaultUpdated = await this.db.vault.update({
       where: { id: vaultId },
       data: {
         ...updateVaultDto,
       },
     });
 
-    return vault;
+    return vaultUpdated;
   }
 
   async findOne(vaultId: string, signedUserId: string) {
