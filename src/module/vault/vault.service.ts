@@ -215,6 +215,7 @@ export class VaultService {
       id: vault.id,
       name: vault.name,
       ownerId: vault.ownerId,
+      description: vault.description,
       users,
       passwords,
     };
