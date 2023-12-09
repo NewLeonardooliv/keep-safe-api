@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/service/database/prisma.service';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { Password as PasswordPersistence } from '@prisma/client';
@@ -12,7 +12,6 @@ export class PasswordService {
 
   async create(
     createPasswordDto: CreatePasswordDto,
-    signedUserId: string,
   ): Promise<PasswordPersistence> {
     const passwordEncrypted = this.encryptPassoword(createPasswordDto.password);
 
@@ -22,7 +21,6 @@ export class PasswordService {
       data: {
         ...createPasswordDto,
         ...passwordEncrypted,
-        userId: signedUserId,
       },
     });
 
@@ -54,14 +52,10 @@ export class PasswordService {
     return password;
   }
 
-  async find(id: string, signedUserId: string) {
+  async find(id: string) {
     const password = await this.db.password.findUnique({
       where: { id },
     });
-
-    if (password.userId !== signedUserId) {
-      throw new NotFoundException('Password not found');
-    }
 
     const passwordDecrypt = this.decryptPassoword(password);
 
@@ -71,9 +65,13 @@ export class PasswordService {
     return { ...password, password: passwordDecrypt };
   }
 
-  async findAll(signedUserId: string) {
+  async findAll(passwordIds: string[]) {
     const passwords = await this.db.password.findMany({
-      where: { userId: signedUserId },
+      where: {
+        id: {
+          in: passwordIds,
+        },
+      },
     });
 
     return passwords.map((password: PasswordPersistence) => {
