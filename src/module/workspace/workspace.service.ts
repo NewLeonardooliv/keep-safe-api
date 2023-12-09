@@ -13,6 +13,7 @@ import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { PasswordService } from '../password/password.service';
 import { CreatePasswordDto } from '../password/dto/create-password.dto';
 import { UpdatePasswordDto } from '../password/dto/update-password.dto';
+import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
 
 @Injectable()
 export class WorkspaceService {
@@ -141,6 +142,31 @@ export class WorkspaceService {
     });
 
     await this.addUser(ownerId, workspace.id, ownerId);
+
+    return workspace;
+  }
+
+  async update(
+    workspaceId: string,
+    signedUserId: string,
+    updateWorkspaceDto: UpdateWorkspaceDto,
+  ): Promise<WorkspacePesistence> {
+    const workspace = await this.findOne(workspaceId, signedUserId);
+
+    if (!workspace) {
+      throw new NotFoundException('Workspace not found.');
+    }
+
+    if (workspace.ownerId != signedUserId) {
+      throw new BadRequestException('Only owners can update this workspace.');
+    }
+
+    await this.db.workspace.update({
+      where: { id: workspaceId },
+      data: {
+        ...updateWorkspaceDto,
+      },
+    });
 
     return workspace;
   }

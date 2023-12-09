@@ -5,8 +5,8 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  Patch,
   Post,
+  Put,
   UseGuards,
 } from '@nestjs/common';
 import { User as UserPersistence } from '@prisma/client';
@@ -42,6 +42,20 @@ export class WorkspaceController {
     this.workspaceService.create(currentUser.id, createWorkspaceDto);
   }
 
+  @Put(':id')
+  @HttpCode(HttpStatus.OK)
+  update(
+    @Param('id') workspaceId: string,
+    @SignedUser() currentUser: UserPersistence,
+    @Body() createWorkspaceDto: CreateWorkspaceDto,
+  ) {
+    this.workspaceService.update(
+      workspaceId,
+      currentUser.id,
+      createWorkspaceDto,
+    );
+  }
+
   @Post(':id/password')
   @HttpCode(HttpStatus.CREATED)
   addPassword(
@@ -56,7 +70,7 @@ export class WorkspaceController {
     );
   }
 
-  @Patch(':id/password/:passwordId')
+  @Put(':id/password/:passwordId')
   @HttpCode(HttpStatus.CREATED)
   updatePassword(
     @Param('id') workspaceId: string,
