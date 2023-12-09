@@ -6,10 +6,18 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { PrismaService } from 'src/service/database/prisma.service';
 import { JwtStrategy } from './strategy/jwt.strategy';
+import { VaultService } from '../vault/vault.service';
+import { PasswordService } from '../password/password.service';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService, PrismaService, JwtStrategy],
+  providers: [
+    AuthService,
+    PrismaService,
+    JwtStrategy,
+    VaultService,
+    PasswordService,
+  ],
   imports: [
     PassportModule,
     JwtModule.register({

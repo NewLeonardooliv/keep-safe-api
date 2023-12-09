@@ -12,6 +12,7 @@ export class CreatePasswordDto extends createZodDto(PasswordCreateSchema) {
   readonly title: string;
   readonly username: string;
   password: string;
+  readonly vaultId: string;
   readonly url: string;
   readonly notes: string;
 }

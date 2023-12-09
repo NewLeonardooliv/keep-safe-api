@@ -9,12 +9,15 @@ import { SigninAuthDto } from './dto/signin-auth.dto';
 import { SignupAuthDto } from './dto/signup-auth.dto';
 import { PrismaService } from 'src/service/database/prisma.service';
 import { encriptPassword, verifyPassword } from 'src/helper/password.helper';
+import { VaultService } from '../vault/vault.service';
+import { VAULT } from 'src/constants/first-vault.constant';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly db: PrismaService,
     private readonly jwtService: JwtService,
+    private readonly vaultService: VaultService,
   ) {}
 
   private async validateUserCredentials(
@@ -70,6 +73,8 @@ export class AuthService {
         password: hashedPassword,
       },
     });
+
+    await this.vaultService.create(user.id, VAULT);
 
     return { token: this.jwtService.sign(user) };
   }

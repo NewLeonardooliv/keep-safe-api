@@ -1,10 +1,10 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 
-const WorkspaceUpdateSchema = z.object({
+const VaultUpdateSchema = z.object({
   name: z.string(),
 });
 
-export class UpdateWorkspaceDto extends createZodDto(WorkspaceUpdateSchema) {
+export class UpdateVaultDto extends createZodDto(VaultUpdateSchema) {
   readonly name: string;
 }

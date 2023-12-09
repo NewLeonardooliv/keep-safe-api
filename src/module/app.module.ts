@@ -4,10 +4,10 @@ import { PasswordModule } from './password/password.module';
 import { ZodValidationPipe } from 'nestjs-zod';
 import { APP_PIPE } from '@nestjs/core';
 import { UserModule } from './user/user.module';
-import { WorkspaceModule } from './workspace/workspace.module';
+import { VaultModule } from './vault/vault.module';
 
 @Module({
-  imports: [AuthModule, PasswordModule, UserModule, WorkspaceModule],
+  imports: [AuthModule, PasswordModule, UserModule, VaultModule],
   controllers: [],
   providers: [
     {
