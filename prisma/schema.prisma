@@ -11,27 +11,77 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String          @id @default(uuid())
+  name          String
+  email         String          @unique
+  password      String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  UserPassowrd  UserPassword[]
+  WorkspaceUser WorkspaceUser[]
+  Workspace     Workspace[]
 
   @@map("users")
 }
 
 model Password {
-  id            String   @id @default(uuid())
-  title         String
-  username      String
-  passwordHash  String   @map("password_hash")
-  passwordCrypt String   @map("password_crypt")
-  url           String
-  notes         String?
-  userId        String   @map("user_id")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at")
+  id                String              @id @default(uuid())
+  title             String
+  username          String
+  passwordHash      String              @map("password_hash")
+  passwordCrypt     String              @map("password_crypt")
+  url               String
+  notes             String?
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @default(now()) @updatedAt @map("updated_at")
+  UserPassowrd      UserPassword[]
+  WorkspacePassword WorkspacePassword[]
 
   @@map("password")
+}
+
+model UserPassword {
+  id         String @id @default(uuid())
+  userId     String @map("user_id")
+  passwordId String @map("password_id")
+
+  password Password @relation(fields: [passwordId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("users_passwords")
+}
+
+model WorkspaceUser {
+  id          String @id @default(uuid())
+  workspaceId String @map("workspace_id")
+  userId      String @map("user_id")
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@map("workspaces_users")
+}
+
+model WorkspacePassword {
+  id          String @id @default(uuid())
+  workspaceId String @map("workspace_id")
+  passwordId  String @map("password_id")
+
+  password  Password  @relation(fields: [passwordId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@map("workspaces_passwords")
+}
+
+model Workspace {
+  id      String @id @default(uuid())
+  name    String
+  ownerId String @map("owner_id")
+
+  user User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  WorkspacePassword WorkspacePassword[]
+  WorkspaceUser     WorkspaceUser[]
+
+  @@map("workspaces")
 }
