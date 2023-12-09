@@ -3,6 +3,11 @@ import { PrismaService } from 'src/service/database/prisma.service';
 import { PasswordService } from '../password/password.service';
 import { CreatePasswordDto } from '../password/dto/create-password.dto';
 import { UserPassword as UserPasswordPersistence } from '@prisma/client';
+import {
+  DEFAULT_QUERY_SKIP,
+  DEFAULT_QUERY_TAKE,
+} from 'src/constants/query.constant';
+import { PaginatedResponse } from 'src/types/paginated-response.type';
 
 @Injectable()
 export class UserService {
@@ -58,5 +63,28 @@ export class UserService {
         userId: userId,
       },
     });
+  }
+
+  async list(search?: string, skip?: number, take?: number) {
+    const whereCondition = {
+      OR: [{ email: { contains: search } }, { name: { contains: search } }],
+    };
+    const users = await this.db.user.findMany({
+      where: whereCondition,
+      select: {
+        id: true,
+        email: true,
+        name: true,
+      },
+      skip: !skip ? DEFAULT_QUERY_SKIP : Number(skip),
+      take: !take ? DEFAULT_QUERY_TAKE : Number(take),
+    });
+
+    const count = await this.db.user.count({ where: whereCondition });
+
+    return {
+      count,
+      result: users,
+    } satisfies PaginatedResponse<typeof users>;
   }
 }

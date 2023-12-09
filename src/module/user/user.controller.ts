@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -22,6 +23,16 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   me(@SignedUser() user: UserPersistence) {
     return this.userService.me(user.id);
+  }
+
+  @Get()
+  @HttpCode(HttpStatus.OK)
+  list(
+    @Query('search') search?: string,
+    @Query('skip') skip?: number,
+    @Query('take') take?: number,
+  ) {
+    return this.userService.list(search, skip, take);
   }
 
   @Get('password')
