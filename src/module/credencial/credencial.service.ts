@@ -1,23 +1,23 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/service/database/prisma.service';
-import { UpdatePasswordDto } from './dto/update-password.dto';
-import { Password as PasswordPersistence } from '@prisma/client';
-import { CreatePasswordDto } from './dto/create-password.dto';
+import { UpdateCredencialDto } from './dto/update-credencial.dto';
+import { Credencial as CredencialPersistence } from '@prisma/client';
+import { CreateCredencialDto } from './dto/create-credencial.dto';
 import { privateKey } from 'src/config/private-key.config';
 import { decryptAES, encryptAES } from 'src/helper/encrypt-decrypt-aes.helper';
 
 @Injectable()
-export class PasswordService {
+export class CredencialService {
   constructor(private readonly db: PrismaService) {}
 
   async create(
-    createPasswordDto: CreatePasswordDto,
-  ): Promise<PasswordPersistence> {
+    createPasswordDto: CreateCredencialDto,
+  ): Promise<CredencialPersistence> {
     const passwordEncrypted = this.encryptPassoword(createPasswordDto.password);
 
     delete createPasswordDto.password;
 
-    const password = await this.db.password.create({
+    const password = await this.db.credencial.create({
       data: {
         ...createPasswordDto,
         ...passwordEncrypted,
@@ -31,13 +31,13 @@ export class PasswordService {
 
   async save(
     passwordId: string,
-    updatePasswordDto: UpdatePasswordDto,
-  ): Promise<PasswordPersistence> {
+    updatePasswordDto: UpdateCredencialDto,
+  ): Promise<CredencialPersistence> {
     const passwordEncrypted = this.encryptPassoword(updatePasswordDto.password);
 
     delete updatePasswordDto.password;
 
-    const password = await this.db.password.update({
+    const password = await this.db.credencial.update({
       data: {
         ...updatePasswordDto,
         ...passwordEncrypted,
@@ -51,7 +51,7 @@ export class PasswordService {
   }
 
   async find(id: string) {
-    const password = await this.db.password.findUnique({
+    const password = await this.db.credencial.findUnique({
       where: { id },
     });
 
@@ -67,7 +67,7 @@ export class PasswordService {
   }
 
   async findAll(passwordIds: string[]) {
-    const passwords = await this.db.password.findMany({
+    const passwords = await this.db.credencial.findMany({
       where: {
         id: {
           in: passwordIds,
@@ -75,7 +75,7 @@ export class PasswordService {
       },
     });
 
-    return passwords.map((password: PasswordPersistence) => {
+    return passwords.map((password: CredencialPersistence) => {
       const passwordDecrypt = this.decryptPassoword(password);
 
       delete password.passwordHash;
@@ -84,7 +84,7 @@ export class PasswordService {
     });
   }
 
-  private decryptPassoword(password: PasswordPersistence) {
+  private decryptPassoword(password: CredencialPersistence) {
     return decryptAES(password.passwordHash, privateKey());
   }
 

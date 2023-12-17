@@ -23,7 +23,7 @@ model User {
   @@map("users")
 }
 
-model Password {
+model Credencial {
   id           String   @id @default(uuid())
   title        String
   username     String
@@ -36,7 +36,7 @@ model Password {
   vault   Vault  @relation(fields: [vaultId], references: [id], onDelete: Cascade)
   vaultId String @map("vault_id")
 
-  @@map("passwords")
+  @@map("credencials")
 }
 
 model VaultUser {
@@ -51,15 +51,15 @@ model VaultUser {
 }
 
 model Vault {
-  id          String @id @default(uuid())
+  id          String  @id @default(uuid())
   name        String
   description String?
-  ownerId     String @map("owner_id")
+  ownerId     String  @map("owner_id")
 
   user User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
   VaultUser VaultUser[]
-  Password  Password[]
+  Credencial  Credencial[]
 
   @@map("vaults")
 }

@@ -1,9 +1,9 @@
 import { PrismaService } from 'src/service/database/prisma.service';
-import { PasswordService } from './password.service';
+import { CredencialService } from './credencial.service';
 import { Module } from '@nestjs/common';
 
 @Module({
   controllers: [],
-  providers: [PasswordService, PrismaService],
+  providers: [CredencialService, PrismaService],
 })
 export class PasswordModule {}

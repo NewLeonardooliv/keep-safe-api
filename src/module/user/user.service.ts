@@ -34,11 +34,7 @@ export class UserService {
     };
     const users = await this.db.user.findMany({
       where: whereCondition,
-      select: {
-        id: true,
-        email: true,
-        name: true,
-      },
+      select: { id: true, email: true, name: true },
       skip: !skip ? DEFAULT_QUERY_SKIP : Number(skip),
       take: !take ? DEFAULT_QUERY_TAKE : Number(take),
     });

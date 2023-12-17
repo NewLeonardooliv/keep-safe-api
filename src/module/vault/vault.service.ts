@@ -4,22 +4,22 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
-  Password as PasswordPesistence,
+  Credencial as CredencialPesistence,
   Vault as VaultPesistence,
   VaultUser as VaultUserPesistence,
 } from '@prisma/client';
 import { PrismaService } from 'src/service/database/prisma.service';
 import { CreateVaultDto } from './dto/create-vault.dto';
-import { PasswordService } from '../password/password.service';
-import { CreatePasswordDto } from '../password/dto/create-password.dto';
-import { UpdatePasswordDto } from '../password/dto/update-password.dto';
+import { CredencialService } from '../credencial/credencial.service';
+import { CreateCredencialDto } from '../credencial/dto/create-credencial.dto';
+import { UpdateCredencialDto } from '../credencial/dto/update-credencial.dto';
 import { UpdateVaultDto } from './dto/update-vault.dto';
 
 @Injectable()
 export class VaultService {
   constructor(
     private readonly db: PrismaService,
-    private readonly passwordService: PasswordService,
+    private readonly passwordService: CredencialService,
   ) {}
 
   async findAllVaults(signedUserId: string) {
@@ -66,18 +66,15 @@ export class VaultService {
     }
 
     return await this.db.vaultUser.create({
-      data: {
-        userId,
-        vaultId,
-      },
+      data: { userId, vaultId },
     });
   }
 
   async createPassword(
     vaultId: string,
     signedUserId: string,
-    createPasswordDto: CreatePasswordDto,
-  ): Promise<PasswordPesistence> {
+    createPasswordDto: CreateCredencialDto,
+  ): Promise<CredencialPesistence> {
     const vault = await this.findOne(vaultId, signedUserId);
 
     if (!vault) {
@@ -102,8 +99,8 @@ export class VaultService {
     vaultId: string,
     passwordId: string,
     signedUserId: string,
-    updatePasswordDto: UpdatePasswordDto,
-  ): Promise<PasswordPesistence> {
+    updatePasswordDto: UpdateCredencialDto,
+  ): Promise<CredencialPesistence> {
     const vault = await this.findOne(vaultId, signedUserId);
 
     if (!vault) {
@@ -129,17 +126,11 @@ export class VaultService {
     createVaultDto: CreateVaultDto,
   ): Promise<VaultPesistence> {
     const vault = await this.db.vault.create({
-      data: {
-        ...createVaultDto,
-        ownerId,
-      },
+      data: { ...createVaultDto, ownerId },
     });
 
     await this.db.vaultUser.create({
-      data: {
-        userId: ownerId,
-        vaultId: vault.id,
-      },
+      data: { userId: ownerId, vaultId: vault.id },
     });
 
     return vault;
@@ -182,20 +173,12 @@ export class VaultService {
           },
           select: {
             user: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-              },
+              select: { id: true, name: true, email: true },
             },
           },
         },
-        Password: {
-          select: {
-            id: true,
-            title: true,
-            username: true,
-          },
+        Credencial: {
+          select: { id: true, title: true, username: true },
         },
       },
     });
@@ -209,7 +192,7 @@ export class VaultService {
     }
 
     const users = vault.VaultUser.map((user) => user.user);
-    const passwords = vault.Password.map((password) => password);
+    const credencials = vault.Credencial.map((password) => password);
 
     return {
       id: vault.id,
@@ -217,7 +200,7 @@ export class VaultService {
       ownerId: vault.ownerId,
       description: vault.description,
       users,
-      passwords,
+      credencials,
     };
   }
 

@@ -14,7 +14,8 @@ import { SignedUser } from 'src/decorators/signed-user.decorator';
 import { VaultService } from './vault.service';
 import { CreateVaultDto } from './dto/create-vault.dto';
 import { JwtGuard } from 'src/guard/jwt.guard';
-import { CreatePasswordDto } from '../password/dto/create-password.dto';
+import { CreateCredencialDto } from '../credencial/dto/create-credencial.dto';
+import { UpdateCredencialDto } from '../credencial/dto/update-credencial.dto';
 
 @UseGuards(JwtGuard)
 @Controller('vault')
@@ -55,12 +56,12 @@ export class VaultController {
     await this.vaultService.update(vaultId, currentUser.id, createVaultDto);
   }
 
-  @Post(':id/password')
+  @Post(':id/credencial')
   @HttpCode(HttpStatus.CREATED)
   async addPassword(
     @Param('id') vaultId: string,
     @SignedUser() currentUser: UserPersistence,
-    @Body() createPasswordDto: CreatePasswordDto,
+    @Body() createPasswordDto: CreateCredencialDto,
   ) {
     await this.vaultService.createPassword(
       vaultId,
@@ -69,32 +70,32 @@ export class VaultController {
     );
   }
 
-  @Put(':id/password/:passwordId')
-  @HttpCode(HttpStatus.CREATED)
+  @Put(':id/credencial/:credencialId')
+  @HttpCode(HttpStatus.OK)
   async updatePassword(
     @Param('id') vaultId: string,
-    @Param('passwordId') passwordId: string,
+    @Param('credencialId') credencialId: string,
     @SignedUser() currentUser: UserPersistence,
-    @Body() createPasswordDto: CreatePasswordDto,
+    @Body() updatePasswordDto: UpdateCredencialDto,
   ) {
     await this.vaultService.updatePassword(
       vaultId,
-      passwordId,
+      credencialId,
       currentUser.id,
-      createPasswordDto,
+      updatePasswordDto,
     );
   }
 
-  @Get(':id/password/:passwordId')
+  @Get(':id/credencial/:credencialId')
   @HttpCode(HttpStatus.OK)
   async findPassword(
     @Param('id') vaultId: string,
-    @Param('passwordId') passwordId: string,
+    @Param('credencialId') credencialId: string,
     @SignedUser() currentUser: UserPersistence,
   ) {
     return await this.vaultService.findPassword(
       vaultId,
-      passwordId,
+      credencialId,
       currentUser.id,
     );
   }
