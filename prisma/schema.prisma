@@ -40,9 +40,11 @@ model Credencial {
 }
 
 model VaultUser {
-  id      String @id @default(uuid())
-  vaultId String @map("vault_id")
-  userId  String @map("user_id")
+  id        String   @id @default(uuid())
+  vaultId   String   @map("vault_id")
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   vault Vault @relation(fields: [vaultId], references: [id], onDelete: Cascade)
@@ -51,15 +53,17 @@ model VaultUser {
 }
 
 model Vault {
-  id          String  @id @default(uuid())
+  id          String   @id @default(uuid())
   name        String
   description String?
-  ownerId     String  @map("owner_id")
+  ownerId     String   @map("owner_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
 
   user User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
-  VaultUser VaultUser[]
-  Credencial  Credencial[]
+  VaultUser  VaultUser[]
+  Credencial Credencial[]
 
   @@map("vaults")
 }
