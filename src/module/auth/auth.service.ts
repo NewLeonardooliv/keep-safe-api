@@ -11,6 +11,8 @@ import { PrismaService } from 'src/service/database/prisma.service';
 import { encriptPassword, verifyPassword } from 'src/helper/password.helper';
 import { VaultService } from '../vault/vault.service';
 import { VAULT } from 'src/constants/first-vault.constant';
+import { WorkspaceService } from '../workspace/workspace.service';
+import { WORKSPACE } from 'src/constants/first-workspace.constant';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +20,7 @@ export class AuthService {
     private readonly db: PrismaService,
     private readonly jwtService: JwtService,
     private readonly vaultService: VaultService,
+    private readonly workspaceService: WorkspaceService,
   ) {}
 
   private async validateUserCredentials(
@@ -74,7 +77,12 @@ export class AuthService {
       },
     });
 
-    await this.vaultService.create(user.id, VAULT);
+    const workspace = await this.workspaceService.create(user.id, WORKSPACE);
+
+    await this.vaultService.create(user.id, {
+      ...VAULT,
+      workspaceId: workspace.id,
+    });
 
     return { token: this.jwtService.sign(user) };
   }

@@ -8,6 +8,7 @@ import { PrismaService } from 'src/service/database/prisma.service';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { VaultService } from '../vault/vault.service';
 import { CredencialService } from '../credencial/credencial.service';
+import { WorkspaceService } from '../workspace/workspace.service';
 
 @Module({
   controllers: [AuthController],
@@ -17,6 +18,7 @@ import { CredencialService } from '../credencial/credencial.service';
     JwtStrategy,
     VaultService,
     CredencialService,
+    WorkspaceService,
   ],
   imports: [
     PassportModule,

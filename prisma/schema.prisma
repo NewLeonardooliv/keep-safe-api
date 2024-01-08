@@ -11,16 +11,31 @@ datasource db {
 }
 
 model User {
-  id        String      @id @default(uuid())
+  id        String   @id @default(uuid())
   name      String
-  email     String      @unique
+  email     String   @unique
   password  String
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  VaultUser VaultUser[]
-  Vault     Vault[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  VaultUser     VaultUser[]
+  Vault         Vault[]
+  WorkspaceUser WorkspaceUser[]
 
   @@map("users")
+}
+
+model Workspace {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+
+  Vault         Vault[]
+  WorkspaceUser WorkspaceUser[]
+
+  @@map("workspaces")
 }
 
 model Credencial {
@@ -30,11 +45,11 @@ model Credencial {
   passwordHash String   @map("password_hash")
   url          String
   notes        String?
+  vaultId      String   @map("vault_id")
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @default(now()) @updatedAt @map("updated_at")
 
-  vault   Vault  @relation(fields: [vaultId], references: [id], onDelete: Cascade)
-  vaultId String @map("vault_id")
+  vault Vault @relation(fields: [vaultId], references: [id], onDelete: Cascade)
 
   @@map("credencials")
 }
@@ -52,15 +67,30 @@ model VaultUser {
   @@map("vault_users")
 }
 
+model WorkspaceUser {
+  id          String   @id @default(uuid())
+  workspaceId String   @map("workspace_id")
+  userId      String   @map("user_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@map("workspace_users")
+}
+
 model Vault {
   id          String   @id @default(uuid())
   name        String
   description String?
+  workspaceId String   @map("workspace_id")
   ownerId     String   @map("owner_id")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
 
-  user User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   VaultUser  VaultUser[]
   Credencial Credencial[]

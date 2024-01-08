@@ -8,12 +8,14 @@ import {
   THROTTLER_PROVIDER,
   ZOD_PROVIDER,
 } from 'src/constants/providers.constant';
+import { WorkspaceModule } from './workspace/workspace.module';
 
 @Module({
   imports: [
     AuthModule,
     PasswordModule,
     UserModule,
+    WorkspaceModule,
     VaultModule,
     ThrottlerModule.forRoot([
       {
