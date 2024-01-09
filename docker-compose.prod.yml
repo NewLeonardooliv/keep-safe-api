@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile.prod
     ports:
-      - 3000:3000
+      - 3050:3000
     volumes:
       - .:/home/node/app
       - /home/node/app/dist
