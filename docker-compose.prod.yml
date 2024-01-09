@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+  app:
+    container_name: keepsafe-api
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/home/node/app
+      - /home/node/app/dist
+      - /home/node/app/node_modules

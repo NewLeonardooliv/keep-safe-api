@@ -8,7 +8,7 @@ services:
     environment:
       - POSTGRES_USER=docker
       - POSTGRES_PASSWORD=docker
-      - POSTGRES_DB=pizzashop
+      - POSTGRES_DB=keepsafe
     volumes:
       - postgres_data:/bitnami/postgresql
 
