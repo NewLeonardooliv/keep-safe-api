@@ -1,10 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'src/service/database/prisma.service';
+import { PrismaService } from '../../service/database/prisma.service';
 import { UpdateCredencialDto } from './dto/update-credencial.dto';
 import { Credencial as CredencialPersistence } from '@prisma/client';
 import { CreateCredencialDto } from './dto/create-credencial.dto';
-import { privateKey } from 'src/config/private-key.config';
-import { decryptAES, encryptAES } from 'src/helper/encrypt-decrypt-aes.helper';
+import { privateKey } from '../../config/private-key.config';
+import {
+  decryptAES,
+  encryptAES,
+} from '../../helper/encrypt-decrypt-aes.helper';
 
 @Injectable()
 export class CredencialService {

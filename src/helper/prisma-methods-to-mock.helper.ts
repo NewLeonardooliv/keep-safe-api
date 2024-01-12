@@ -1,0 +1,18 @@
+export const prismaMethods = {
+  findFirst: jest.fn(),
+  findUnique: jest.fn(),
+  findUniqueOrThrow: jest.fn(),
+  findFirstOrThrow: jest.fn(),
+  findMany: jest.fn(),
+  create: jest.fn(),
+  createMany: jest.fn(),
+  delete: jest.fn(),
+  update: jest.fn(),
+  deleteMany: jest.fn(),
+  updateMany: jest.fn(),
+  upsert: jest.fn(),
+  count: jest.fn(),
+  aggregate: jest.fn(),
+  groupBy: jest.fn(),
+  fields: undefined,
+};

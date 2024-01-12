@@ -4,6 +4,7 @@ import { z } from 'zod';
 const VaultCreateSchema = z.object({
   name: z.string(),
   description: z.string().nullable(),
+  workspaceId: z.string(),
 });
 
 export class CreateVaultDto extends createZodDto(VaultCreateSchema) {

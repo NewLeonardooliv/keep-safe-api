@@ -43,7 +43,7 @@ export class VaultController {
     @SignedUser() currentUser: UserPersistence,
     @Body() createVaultDto: CreateVaultDto,
   ) {
-    await this.vaultService.create(currentUser.id, createVaultDto);
+    return await this.vaultService.create(currentUser.id, createVaultDto);
   }
 
   @Put(':id')

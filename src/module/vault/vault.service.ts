@@ -8,7 +8,7 @@ import {
   Vault as VaultPesistence,
   VaultUser as VaultUserPesistence,
 } from '@prisma/client';
-import { PrismaService } from 'src/service/database/prisma.service';
+import { PrismaService } from '../../service/database/prisma.service';
 import { CreateVaultDto } from './dto/create-vault.dto';
 import { CredencialService } from '../credencial/credencial.service';
 import { CreateCredencialDto } from '../credencial/dto/create-credencial.dto';
@@ -125,6 +125,10 @@ export class VaultService {
     ownerId: string,
     createVaultDto: CreateVaultDto,
   ): Promise<VaultPesistence> {
+    if (!(await this.db.user.findFirst({ where: { id: ownerId } }))) {
+      throw new NotFoundException('User not found');
+    }
+
     const vault = await this.db.vault.create({
       data: { ...createVaultDto, ownerId },
     });
